@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Index{% endblock %}
+
+{% block body_block %}
+    <h1>Bares y tapas</h1><hr>
+
+    <h3>Lista de bares:</h3>
+    {% if bares %}
+    <ul>
+      {% for bar in bares %}
+        <li><a href="/rango/bar/{{ bar.slug }}">{{ bar.nombre }}</a></li>
+      {% endfor %}
+    </ul>
+
+    <div id="grafico" style="height: 300px"></div>
+    {% else %}
+    <strong>There are no bares present.</strong>
+    {% endif %}
+
+{% endblock %}

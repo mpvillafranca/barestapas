@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block body_block %}
+<div class="jumbotron">
+<h1>Regístrate aquí</h1>
+<form method="post" action=".">
+        {% csrf_token %}
+        {% load bootstrap %}
+        {{ form|bootstrap }}
+
+        <button class="btn btn-primary" type="submit">Registro</button>
+</form>
+</div>
+{% endblock %}

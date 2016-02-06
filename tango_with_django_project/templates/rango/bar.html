@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ bar_name }}{% endblock %}
+
+{% block body_block %}
+<div class="jumbotron">
+    <h1><b>{{ bar_name }}</b></h1>
+    <p><b id="visit_count">{{ bar.n_visitas }}</b> personas han visitado este bar.</p></br>
+    {% if bar %}
+        <div class="row">
+          <div class="col-xs-6 col-md-5">
+		    {% load easy_maps_tags %}
+		    {% easy_map bar.direccion 300 220 %}
+            <p>C/ {{ bar.direccion }}</p>
+          </div>
+          <div class="col-xs-6 col-md-4">
+            {% if tapas %}
+            <ul>
+                {% for tapa in tapas %}
+                    <li>{{ tapa.nombre }} (<b id="votos_count-{{tapa.id}}">{{ tapa.votos }}</b> votos) <button class="btn btn-default btn-xs votos" data-tapid="{{tapa.id}}">Me gusta</button></li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <strong>No tapas currently in bar.</strong>
+            {% endif %}
+            <a href="/rango/add_tapa/{{ bar.slug }}"> Añadir nuevas tapas a este bar </a>
+          </div>
+        </div>
+    {% else %}
+        The specified bar {{ bar_name }} does not exist!
+    {% endif %}
+</div>
+{% endblock %}

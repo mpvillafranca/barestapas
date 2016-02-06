@@ -1,0 +1,15 @@
+#fontcontrol button{
+    display:block;
+    font-weight:bold;
+    padding: 5px;
+    text-decoration: none;
+}
+#regular{  
+    font-size:12px !important;
+}
+#bigger{  
+    font-size:12px !important;
+}
+#morebigger{  
+    font-size:12px  !important;
+}

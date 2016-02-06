@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Añadir una nueva tapa a {{ bar.nombre }} {% endblock %}
+
+{% block body_block %}
+<div class="jumbotron">
+    <h1>Añadir una nueva tapa al bar {{ bar.nombre }}</h1>
+    <br/>
+
+    <div class="container">
+
+        <form class="span6" id="category_form" method="post" action=".">
+
+            {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+            <label class="control-label required" for="{{ field.auto_id }}">{{ field.label }}</label>
+            {{ field }}
+            {% endfor %}
+
+            <br/>
+            <input class="btn btn-primary" type="submit" name="submit" value="Añadir tapa"/>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}
