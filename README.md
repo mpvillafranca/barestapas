@@ -74,15 +74,15 @@ server {
      }
 ```
 
-Además, usaremos [`supervisor`](http://supervisord.org/) para vigilar que el proceso del servidor web esté siempre ejecutándose. Su configuración se adjunta también al repositorio.
+Además, usaremos [`supervisor`](http://supervisord.org/) para vigilar que el proceso del servidor web esté siempre ejecutándose. Su configuración se [adjunta](./production-webconfig) también al repositorio.
 
 ```
 # /etc/supervisor/conf.d/supervisor.conf
 
 [program:gunicorn]
-command=/usr/local/bin/gunicorn Bares.wsgi  --bind 0.0.0.0:8000
-directory=/path/donde/este/manage.py
-user=elquesea
+command=/usr/local/bin/gunicorn tango_with_django_project.wsgiprod --bind 0.0.0.0:8000
+directory=/home/<usuario>/barestapas/tango_with_django_project
+user=<usuario>
 autostart=true
 autorestart=true
 redirect_stderr=true
@@ -103,7 +103,12 @@ $ azure login
 
 # Instalamos una imagen
 $ azure vm create baresytapas b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_3-LTS-amd64-server-20160201-en-us-30GB <usuario> <clave> --location "East Asia" --ssh
+
+# Abrimos el puerto 80
+$ azure vm endpoint create baresytapas 80 80
 ```
+
+- **Aprovisionamiento de la máquina**:
 
 A continuación, utilizaremos [Ansible](http://www.ansible.com/) para aprovisionar la máquina con todo lo necesario. Para ello, creamos un Playbook en formato `.yml`. Además, debemos almacenar como variable de entorno ANSIBLE_HOSTS, con el contenido de un fichero `ansible_hosts` con el alias de la máquina entre corchetes ([]) y, en otra línea, el dns o ip de la máquina. A continuación se muestra el contenido del `baresytapas.yml` utilizado.
 
@@ -133,34 +138,42 @@ A continuación, utilizaremos [Ansible](http://www.ansible.com/) para aprovision
   - name: Instalar servidor wsgi Gunicorn
     pip: name=gunicorn 
 
-  - - name: Obtener la aplicacion de Github
+  - name: Obtener la aplicacion de Github
     become_user: <usuario>
     git: repo=https://github.com/mpvillafranca/barestapas.git  dest=/home/<usuario>/barestapas clone=yes force=yes
     
   - name: Instalar dependencias de la aplicacion
-    become_user: <usuario>
     pip: requirements=/home/<usuario>/barestapas/requirements.txt
 ```
 
-Para aplicar los cambios, ejecutamos:
+Para aplicar los cambios, tras añadir nuestra llave para acceder con `ssh-copy-id`, ejecutamos:
 
 ```
 $ ansible-playbook -u <usuario> baresytapas.yml
 ```
 
-A continuación, con [Fabric] realizamos las últimas gestiones por medio de un fichero `fabfile.py`:
+- **Aplicación de las configuraciones**:
+
+A continuación, con [Fabric](www.fabfile.org/) realizamos las últimas gestiones por medio de un fichero `fabfile.py`:
 
 ```python
 from fabric.api import run
 
 def runserver():
     run('cd barestapas/tango_with_django_project && python manage.py migrate --settings=tango_with_django_project.productionsettings')
+    run('cd barestapas/tango_with_django_project && python populate_rango.py')
     run('sudo mkdir -p /var/www')
     run('cd barestapas/tango_with_django_project && sudo cp -r static/ /var/www/static')
     run('cd barestapas && sudo cp production-webconfig/default /etc/nginx/sites-available/')
     run('cd barestapas && sudo cp production-webconfig/supervisor.conf /etc/supervisor/conf.d/')
     run('sudo service nginx restart')
     run('sudo service supervisor restart')
+```
+
+Finalmente, ejecutamos:
+
+```
+$ fab -p '<clave_maquina>' -H <usuario_maquina>@baresytapas.cloudapp.net runserver
 ```
 
 Con todo esto, finalmente, tendremos a la aplicación ejecutándose [aquí](http://baresytapas.cloudapp.net) con la configuración de Django correspondiente a produción.
