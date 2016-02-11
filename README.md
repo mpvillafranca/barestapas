@@ -2,6 +2,8 @@
 
 > Aplicación Bares y Tapas desarrollada en la asignatura de Desarrollo de Aplicaciones para Internet (DAI)
 
+[![](https://camo.githubusercontent.com/9285dd3998997a0835869065bb15e5d500475034/687474703a2f2f617a7572656465706c6f792e6e65742f6465706c6f79627574746f6e2e706e67)](http://baresytapas.cloudapp.net)
+
 ## Descripción 
 
 La aplicación consiste en una adaptación del tutorial [How To Tango With Django 1.7](http://www.tangowithdjango.com/book17/). Disponemos de una lista de bares y tapas asociadas a dichos bares, que los usuarios registrados podrán ir incrementando. El sistema cuenta con las siguientes funcionalidades:
